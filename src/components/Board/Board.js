@@ -5,40 +5,39 @@ class Board extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            isNext: true,
-            history: [{
-                squares: new Array(9).fill(null),
-            }]
-        }
     }
 
     renderSquare(i) {
+        let value = this.props.history[this.props.history.length-1].squares[i];
+
         return (
             <Square
-                value={this.state.history[this.state.history.length-1].squares[i]}
+                value={value}
                 onClick={() => this.handleClick(i)}
             />
         );
     }
 
     handleClick(i) {
-        const history = this.state.history;
-        const current = history[this.state.history.length - 1];
+        const history = this.props.history;
+        const current = history[this.props.history.length - 1];
         const squares = current.squares.slice();
 
         if (this.calculateWinner(squares) || squares[i]) {
             return;
         }
 
-        squares[i] = this.state.isNext ? 'X' : '0';
+        squares[i] = this.props.isNext ? 'X' : '0';
+
+        this.props.updateHistory(squares)
 
         this.setState({
             history: history.concat([{
                 squares: squares
             }]),
-            isNext: !this.state.isNext
         });
+
+        this.props.updateIsNext();
     }
 
     calculateWinner(squares) {
@@ -55,34 +54,23 @@ class Board extends Component {
         for (let i = 0; i < lines.length; i++) {
             const [a, b, c] = lines[i];
             if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-                return squares[a];
+                return {winner: squares[a], line: lines[i]};
             }
         }
         return null;
     }
 
-    handleGoBack() {
-        let history = this.state.history.slice();
-
-        if (history.length <= 1) {
-            return;
-        }
-
-        history.splice(this.state.history.length - 1, 1);
-
-        this.setState({
-            isNext: !this.state.isNext,
-            history: history
-        });
-    }
-
     render() {
-        const winner = this.calculateWinner(this.state.history[this.state.history.length - 1].squares);
+        const currentBoard = this.props.history[this.props.history.length - 1].squares;
+        const winner = this.calculateWinner(currentBoard);
+
         let status;
         if (winner) {
-            status = 'Winner: ' + winner;
+            status = 'Winner: ' + winner.winner;
+        } else if (!winner && !currentBoard.includes(null)) {
+            status = 'Winner: X-Y';
         } else {
-            status = 'Next player: ' + (this.state.isNext ? 'X' : 'O');
+            status = 'Next player: ' + (this.props.isNext ? 'X' : 'O');
         }
 
         const squares = [];
@@ -95,8 +83,7 @@ class Board extends Component {
         }
 
         return(
-            <div>
-                <button className="go-back" onClick={() => this.handleGoBack()}>Go back</button>
+            <div className="item">
                 <div className="status">
                     {status}
                 </div>
