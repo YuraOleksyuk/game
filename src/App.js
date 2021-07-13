@@ -17,10 +17,12 @@ class App extends Component {
     }
 
     updateHistory(squares) {
-        this.setState({
-            history: this.state.history.concat([{
-                squares: squares
-            }]),
+        this.setState((state) => {
+             return {
+                 history: state.history.concat([{
+                     squares: squares
+                 }]),
+             }
         });
     }
 

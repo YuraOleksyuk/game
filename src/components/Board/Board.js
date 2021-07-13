@@ -3,15 +3,12 @@ import Square from '../Square/Square';
 
 class Board extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     renderSquare(i) {
         let value = this.props.history[this.props.history.length-1].squares[i];
 
         return (
             <Square
+                key={i}
                 value={value}
                 onClick={() => this.handleClick(i)}
             />
@@ -30,13 +27,6 @@ class Board extends Component {
         squares[i] = this.props.isNext ? 'X' : '0';
 
         this.props.updateHistory(squares)
-
-        this.setState({
-            history: history.concat([{
-                squares: squares
-            }]),
-        });
-
         this.props.updateIsNext();
     }
 
@@ -77,7 +67,7 @@ class Board extends Component {
 
         for (let i = 0; i < 9; i++) {
             if (i % 3 === 0) {
-                squares.push(<div className="board-row"></div>);
+                squares.push(<div key={(i+1)*10} className="board-row"></div>);
             }
             squares.push(this.renderSquare(i));
         }
