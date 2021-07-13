@@ -3,16 +3,10 @@ import Board from '../Board/Board';
 
 class History extends Component{
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
-        const histotyList = [];
-
-        this.props.history.reverse().forEach((item) => {
-            histotyList.push(<Board history={new Array(item)}/>)
-        })
+        const histotyList = this.props.history.slice().map((item, index) => {
+            return <Board key={'board-'+index} history={new Array(item)}/>;
+        });
 
         return (
             <div className="game-history">
